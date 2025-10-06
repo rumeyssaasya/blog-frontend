@@ -7,7 +7,6 @@ import {
   createPostByAdmin, updatePostByAdmin, updateUserByAdmin
 } from '../redux/slices/adminSlice';
 import ProtectedAdmin from '../components/ProtectedAdmin';
-import { comment } from 'postcss';
 
 export default function AdminPanel() {
   const dispatch = useDispatch();
@@ -101,7 +100,6 @@ export default function AdminPanel() {
   });
   const tabContainerStyle = { display: 'flex', justifyContent: 'center', gap: '12px', marginBottom: '24px' };
 
-   console.log(selectedPost)
   return (
     <ProtectedAdmin>
       <div style={tabContainerStyle}>
@@ -176,7 +174,7 @@ export default function AdminPanel() {
             ))}
 
             {/* Post Detail */}
-            {selectedPost &&(
+            {selectedPost && console.log(selectedPost)(
                 
               <div ref={postDetailRef} style={{ marginTop: '24px', padding: '16px', border: '1px solid #C4B5FD', borderRadius: '12px', backgroundColor: '#F3E8FF' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>

@@ -106,7 +106,7 @@ function PostCard({ post, theme, currentUserId }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px", padding: "0 16px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <MdOutlinePerson size={30} style={{ color: theme === "dark" ? "#e0e7ff" : "#6b21a8" }} />
-          <p style={{ fontSize: "16px", marginTop: "4px" }}>{(post.author?.username) || (post.user?.username) || "Kullanıcı"}</p>
+          <p style={{ fontSize: "16px", marginTop: "4px" }}>{post.user.username}</p>
         </div>
 
         <ProtectedPage>

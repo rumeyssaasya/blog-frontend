@@ -1,12 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function ProtectedPage({ children }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [authorized, setAuthorized] = useState(false);
 
   useEffect(() => {
+    // Admin rotalarında bu guard devre dışı
+    if (pathname?.startsWith("/admin")) {
+      setAuthorized(true);
+      return;
+    }
     const token = localStorage.getItem("token");
     if (!token) {
       router.push("/login");
@@ -31,7 +37,7 @@ export default function ProtectedPage({ children }) {
       localStorage.removeItem("token");
       router.push("/login");
     }
-  }, [router]);
+  }, [router, pathname]);
 
   if (!authorized) return <div className="text-center mt-10">Yönlendiriliyor...</div>;
   return <>{children}</>;

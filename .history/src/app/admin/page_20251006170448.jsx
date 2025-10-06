@@ -7,7 +7,6 @@ import {
   createPostByAdmin, updatePostByAdmin, updateUserByAdmin
 } from '../redux/slices/adminSlice';
 import ProtectedAdmin from '../components/ProtectedAdmin';
-import { comment } from 'postcss';
 
 export default function AdminPanel() {
   const dispatch = useDispatch();
@@ -101,7 +100,6 @@ export default function AdminPanel() {
   });
   const tabContainerStyle = { display: 'flex', justifyContent: 'center', gap: '12px', marginBottom: '24px' };
 
-   console.log(selectedPost)
   return (
     <ProtectedAdmin>
       <div style={tabContainerStyle}>
@@ -176,8 +174,7 @@ export default function AdminPanel() {
             ))}
 
             {/* Post Detail */}
-            {selectedPost &&(
-                
+            {selectedPost && (
               <div ref={postDetailRef} style={{ marginTop: '24px', padding: '16px', border: '1px solid #C4B5FD', borderRadius: '12px', backgroundColor: '#F3E8FF' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: '600' }}>{selectedPost.title}</h3>
@@ -193,7 +190,7 @@ export default function AdminPanel() {
                 {selectedPost.image && (
                   <div style={{ marginBottom: '16px' }}>
                     <img 
-                      src={`http://localhost:5000/${selectedPost.image.replace(/\\/g, "/")}`} 
+                      src={selectedPost.image} 
                       alt={selectedPost.title} 
                       style={{ maxWidth: '300px', maxHeight: '300px', borderRadius: '8px' }}
                     />
@@ -201,7 +198,9 @@ export default function AdminPanel() {
                 )}
 
                 <h4 style={{ marginBottom: '12px', fontWeight: '600' }}>Yorumlar</h4>
-                {!postComments && (
+                {postComments.length === 0 ? (
+                  <p>Bu post için yorum yok.</p>
+                ) : (
                   postComments.map(comment => (
                     <div key={comment._id} style={{ ...cardStyle, justifyContent: 'space-between' }} onClick={() => setSelectedCommentId(comment._id)}>
                       <span>{comment.author?.username || "Anonim"}: {comment.content}</span>
@@ -219,7 +218,7 @@ export default function AdminPanel() {
                       style={{ width: '100%', padding: '8px', marginBottom: '12px', borderRadius: '8px', border: '1px solid #C4B5FD', minHeight: '80px' }}
                     />
                     <div style={{ display: 'flex', gap: '12px' }}>
-                      <button onClick={() => {setEditComment({ id: null, content: '' }); setSelectedCommentId(null); }} style={{ ...buttonStyle, backgroundColor: '#3B82F6' }}>Kaydet</button>
+                      <button onClick={() => { /* dispatch updateCommentByAdmin */ setEditComment({ id: null, content: '' }); setSelectedCommentId(null); }} style={{ ...buttonStyle, backgroundColor: '#3B82F6' }}>Kaydet</button>
                       <button onClick={() => { dispatch(deleteCommentByAdmin(selectedComment._id)); setSelectedCommentId(null); }} style={{ ...buttonStyle, backgroundColor: '#EF4444' }}>Sil</button>
                       <button onClick={() => setSelectedCommentId(null)} style={{ ...buttonStyle, backgroundColor: '#9CA3AF' }}>İptal</button>
                     </div>
@@ -236,11 +235,10 @@ export default function AdminPanel() {
             <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '16px', color: '#6D28D9' }}>Tüm Yorumlar</h2>
             {comments.map(comment => {
               const parentPost = posts.find(p => p._id === comment.post);
-              console.log(comment.post)
               return (
                 <div key={comment._id} style={cardStyle}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <span><strong>Post:</strong> {comment.post?.title }</span>
+                    <span><strong>Post:</strong> {parentPost?.title || "Post silinmiş"}</span>
                     <span><strong>Kullanıcı:</strong> {comment.author?.username || "Kullanıcı Silinmiş"}</span>
                     <span><strong>Yorum:</strong> {comment.content}</span>
                   </div>

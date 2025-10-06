@@ -101,7 +101,7 @@ export default function AdminPanel() {
   });
   const tabContainerStyle = { display: 'flex', justifyContent: 'center', gap: '12px', marginBottom: '24px' };
 
-   console.log(selectedPost)
+   console.log(select)
   return (
     <ProtectedAdmin>
       <div style={tabContainerStyle}>

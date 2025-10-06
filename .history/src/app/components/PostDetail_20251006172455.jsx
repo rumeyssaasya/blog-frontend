@@ -7,11 +7,11 @@ import {
   createPostByAdmin, updatePostByAdmin, updateUserByAdmin
 } from '../redux/slices/adminSlice';
 import ProtectedAdmin from '../components/ProtectedAdmin';
-import { comment } from 'postcss';
 
 export default function AdminPanel() {
   const dispatch = useDispatch();
   const { token, users, posts, comments } = useSelector(state => state.admin);
+
   const [activeTab, setActiveTab] = useState('users');
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [selectedCommentId, setSelectedCommentId] = useState(null);
@@ -36,53 +36,33 @@ export default function AdminPanel() {
     }
   }, [dispatch, token]);
 
-  // Scroll to comment detail when selectedComment changes
   useEffect(() => {
     if (selectedCommentId && commentDetailRef.current) {
       commentDetailRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [selectedCommentId]);
 
-  // Scroll to post detail when selectedPost changes
   useEffect(() => {
     if (selectedPostId && postDetailRef.current) {
       postDetailRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [selectedPostId]);
 
-  // Handle image functions
-  const handleImg = () => {
-    console.log('Image handler function');
-    // Bu fonksiyonu ihtiyacınıza göre genişletebilirsiniz
-  };
-
-  // Handle user update with bio
   const handleUpdateUser = () => {
     if (editUser.id) {
       dispatch(updateUserByAdmin({
         id: editUser.id,
-        data: {
-          username: editUser.username,
-          email: editUser.email,
-          bio: editUser.bio
-        }
+        data: { username: editUser.username, email: editUser.email, bio: editUser.bio }
       }));
       setEditUser({ id: null, username: '', email: '', bio: '' });
     }
   };
 
-  // Handle post update
   const handleUpdatePost = () => {
     if (editPost.id) {
       dispatch(updatePostByAdmin({
         id: editPost.id,
-        data: {
-          title: editPost.title,
-          content: editPost.content,
-          tags: editPost.tags,
-          image: editPost.image,
-          author: editPost.author
-        }
+        data: { title: editPost.title, content: editPost.content, tags: editPost.tags, image: editPost.image, author: editPost.author }
       }));
       setEditPost({ id: null, title: '', content: '', tags: '', image: null, author: null });
     }
@@ -101,7 +81,6 @@ export default function AdminPanel() {
   });
   const tabContainerStyle = { display: 'flex', justifyContent: 'center', gap: '12px', marginBottom: '24px' };
 
-   console.log(selectedPost)
   return (
     <ProtectedAdmin>
       <div style={tabContainerStyle}>
@@ -113,7 +92,7 @@ export default function AdminPanel() {
       <div style={containerStyle}>
         <h1 style={{ textAlign: 'center', fontSize: '2rem', fontWeight: '700', color: '#5B21B6', marginBottom: '24px' }}>Admin Panel</h1>
 
-        {/* Users Tab */}
+        {/* USERS TAB */}
         {activeTab === 'users' && (
           <section style={sectionStyle}>
             <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '16px', color: '#6D28D9' }}>Kullanıcılar</h2>
@@ -142,7 +121,7 @@ export default function AdminPanel() {
           </section>
         )}
 
-        {/* Posts Tab */}
+        {/* POSTS TAB */}
         {activeTab === 'posts' && (
           <section style={sectionStyle}>
             <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '16px', color: '#6D28D9' }}>Postlar</h2>
@@ -156,18 +135,6 @@ export default function AdminPanel() {
               <button onClick={() => { dispatch(createPostByAdmin({ ...newPost })); setNewPost({ title: '', content: '', tags: '', image: null }); }} style={{ ...buttonStyle, backgroundColor: '#10B981' }}>Oluştur</button>
             </div>
 
-            {/* Edit Post Form */}
-            {editPost.id && (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: '16px', padding: '16px', backgroundColor: '#F3E8FF', borderRadius: '12px' }}>
-                <input value={editPost.title} onChange={e => setEditPost({ ...editPost, title: e.target.value })} placeholder="Başlık" style={inputStyle} />
-                <input value={editPost.content} onChange={e => setEditPost({ ...editPost, content: e.target.value })} placeholder="İçerik" style={inputStyle} />
-                <input value={editPost.tags} onChange={e => setEditPost({ ...editPost, tags: e.target.value })} placeholder="Tagler (virgülle)" style={inputStyle} />
-                <input type="file" onChange={e => setEditPost({ ...editPost, image: e.target.files?.[0] || null })} style={inputStyle} />
-                <button onClick={handleUpdatePost} style={{ ...buttonStyle, backgroundColor: '#7C3AED' }}>Güncelle</button>
-                <button onClick={() => setEditPost({ id: null, title: '', content: '', tags: '', image: null, author: null })} style={{ ...buttonStyle, backgroundColor: '#9CA3AF' }}>İptal</button>
-              </div>
-            )}
-
             {/* Posts List */}
             {posts.map(post => (
               <div key={post._id} style={cardStyle} onClick={() => { setSelectedPostId(post._id); setSelectedCommentId(null); }}>
@@ -176,8 +143,7 @@ export default function AdminPanel() {
             ))}
 
             {/* Post Detail */}
-            {selectedPost &&(
-                
+            {selectedPost && (
               <div ref={postDetailRef} style={{ marginTop: '24px', padding: '16px', border: '1px solid #C4B5FD', borderRadius: '12px', backgroundColor: '#F3E8FF' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: '600' }}>{selectedPost.title}</h3>
@@ -187,21 +153,12 @@ export default function AdminPanel() {
                   </div>
                 </div>
                 <p style={{ marginBottom: '12px' }}>{selectedPost.content}</p>
-                <p style={{ fontStyle: 'italic', marginBottom: '16px' }}>Tags: {Array.isArray(selectedPost.tags) ? selectedPost.tags.join(', ') : selectedPost.tags}</p>
 
-                {/* Post Image */}
-                {selectedPost.image && (
-                  <div style={{ marginBottom: '16px' }}>
-                    <img 
-                      src={`http://localhost:5000/${selectedPost.image.replace(/\\/g, "/")}`} 
-                      alt={selectedPost.title} 
-                      style={{ maxWidth: '300px', maxHeight: '300px', borderRadius: '8px' }}
-                    />
-                  </div>
-                )}
-
+                {/* Yorumlar */}
                 <h4 style={{ marginBottom: '12px', fontWeight: '600' }}>Yorumlar</h4>
-                {!postComments && (
+                {postComments.length === 0 ? (
+                  <p style={{ color: '#6b7280' }}>Henüz yorum yapılmamış.</p>
+                ) : (
                   postComments.map(comment => (
                     <div key={comment._id} style={{ ...cardStyle, justifyContent: 'space-between' }} onClick={() => setSelectedCommentId(comment._id)}>
                       <span>{comment.author?.username || "Anonim"}: {comment.content}</span>
@@ -209,7 +166,7 @@ export default function AdminPanel() {
                   ))
                 )}
 
-                {/* Selected Comment Detail */}
+                {/* Yorum Detayı */}
                 {selectedComment && (
                   <div ref={commentDetailRef} style={{ marginTop: '16px', padding: '12px', border: '1px solid #C4B5FD', borderRadius: '12px', backgroundColor: '#EDE9FE' }}>
                     <h5 style={{ fontWeight: '600', marginBottom: '12px' }}>Yorum Detayı</h5>
@@ -219,7 +176,7 @@ export default function AdminPanel() {
                       style={{ width: '100%', padding: '8px', marginBottom: '12px', borderRadius: '8px', border: '1px solid #C4B5FD', minHeight: '80px' }}
                     />
                     <div style={{ display: 'flex', gap: '12px' }}>
-                      <button onClick={() => {setEditComment({ id: null, content: '' }); setSelectedCommentId(null); }} style={{ ...buttonStyle, backgroundColor: '#3B82F6' }}>Kaydet</button>
+                      <button onClick={() => { setEditComment({ id: null, content: '' }); setSelectedCommentId(null); }} style={{ ...buttonStyle, backgroundColor: '#3B82F6' }}>Kaydet</button>
                       <button onClick={() => { dispatch(deleteCommentByAdmin(selectedComment._id)); setSelectedCommentId(null); }} style={{ ...buttonStyle, backgroundColor: '#EF4444' }}>Sil</button>
                       <button onClick={() => setSelectedCommentId(null)} style={{ ...buttonStyle, backgroundColor: '#9CA3AF' }}>İptal</button>
                     </div>
@@ -230,17 +187,16 @@ export default function AdminPanel() {
           </section>
         )}
 
-        {/* Comments Tab */}
+        {/* COMMENTS TAB */}
         {activeTab === 'comments' && (
           <section style={sectionStyle}>
             <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '16px', color: '#6D28D9' }}>Tüm Yorumlar</h2>
             {comments.map(comment => {
               const parentPost = posts.find(p => p._id === comment.post);
-              console.log(comment.post)
               return (
                 <div key={comment._id} style={cardStyle}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <span><strong>Post:</strong> {comment.post?.title }</span>
+                    <span><strong>Post:</strong> {parentPost?.title || "Post silinmiş"}</span>
                     <span><strong>Kullanıcı:</strong> {comment.author?.username || "Kullanıcı Silinmiş"}</span>
                     <span><strong>Yorum:</strong> {comment.content}</span>
                   </div>

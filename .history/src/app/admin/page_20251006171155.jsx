@@ -7,7 +7,6 @@ import {
   createPostByAdmin, updatePostByAdmin, updateUserByAdmin
 } from '../redux/slices/adminSlice';
 import ProtectedAdmin from '../components/ProtectedAdmin';
-import { comment } from 'postcss';
 
 export default function AdminPanel() {
   const dispatch = useDispatch();
@@ -101,7 +100,6 @@ export default function AdminPanel() {
   });
   const tabContainerStyle = { display: 'flex', justifyContent: 'center', gap: '12px', marginBottom: '24px' };
 
-   console.log(selectedPost)
   return (
     <ProtectedAdmin>
       <div style={tabContainerStyle}>
@@ -176,8 +174,7 @@ export default function AdminPanel() {
             ))}
 
             {/* Post Detail */}
-            {selectedPost &&(
-                
+            {selectedPost && (
               <div ref={postDetailRef} style={{ marginTop: '24px', padding: '16px', border: '1px solid #C4B5FD', borderRadius: '12px', backgroundColor: '#F3E8FF' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: '600' }}>{selectedPost.title}</h3>
@@ -236,11 +233,10 @@ export default function AdminPanel() {
             <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '16px', color: '#6D28D9' }}>Tüm Yorumlar</h2>
             {comments.map(comment => {
               const parentPost = posts.find(p => p._id === comment.post);
-              console.log(comment.post)
               return (
                 <div key={comment._id} style={cardStyle}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <span><strong>Post:</strong> {comment.post?.title }</span>
+                    <span><strong>Post:</strong> {parentPost?.title || "Post silinmiş"}</span>
                     <span><strong>Kullanıcı:</strong> {comment.author?.username || "Kullanıcı Silinmiş"}</span>
                     <span><strong>Yorum:</strong> {comment.content}</span>
                   </div>
