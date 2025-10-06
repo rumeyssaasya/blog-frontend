@@ -15,7 +15,7 @@ export function Header() {
 
   useEffect(() => {
     const adminToken = localStorage.getItem('adminToken');
-    setIsAdmin(true);
+    setIsAdmin(!!adminToken); // token varsa admin
   }, []);
 
   const links = [
@@ -42,7 +42,7 @@ export function Header() {
           <div className="font-bold text-5xl text-white">
             Tarvina Blog
           </div>
-          {isAdmin && ( 
+          {!isAdmin && ( 
             <Link href="/myProfile">
               <CgProfile 
                 size={40} 

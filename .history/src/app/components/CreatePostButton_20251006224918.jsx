@@ -11,7 +11,7 @@ export default function CreatePostButton() {
 
   useEffect(() => {
     // Normal kullanıcı token'ı kontrolü
-    const userToken = localStorage.getItem("token")
+    const userToken = localStorage.getItem("userToken")
     setIsUserLoggedIn(!!userToken)
   }, [])
 

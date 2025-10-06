@@ -23,8 +23,7 @@ export default function AdminLoginPage() {
     e.preventDefault()
     try {
       const result = await dispatch(adminLogin({ email, password })).unwrap()
-      localStorage.setItem('adminToken', result)
-      console.log(result)
+      localStorage.setItem('adminToken', result.token)
       localStorage.setItem('adminEmail', email)
       router.replace('/admin')
     } catch (e) {

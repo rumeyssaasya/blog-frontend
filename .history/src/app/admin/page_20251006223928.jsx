@@ -67,8 +67,7 @@ export default function AdminPanel() {
 
   const handleLogout=()=>{
     localStorage.removeItem('adminToken')
-    localStorage.removeItem('adminEmail')
-    router.replace('/admin/login');
+    localStorage.removeItem('')
   }
   const handleUpdateUser = () => {
     if (editUser.id) {
@@ -134,7 +133,7 @@ export default function AdminPanel() {
   return (
     <ProtectedAdmin>
       <div style={tabContainerStyle}>
-        {['users', 'posts', 'comments','Çıkış Yap'].map(tab => (
+        {['users', 'posts', 'comments','logout'].map(tab => (
           <button key={tab} onClick={() => { setActiveTab(tab); setSelectedPostId(null); setSelectedCommentId(null); }} style={tabButtonStyle(activeTab === tab)}>{tab.toUpperCase()}</button>
         ))}
       </div>
@@ -142,12 +141,9 @@ export default function AdminPanel() {
       <div style={containerStyle}>
         <h1 style={{ textAlign: 'center', fontSize: '2rem', fontWeight: '700', color: '#5B21B6', marginBottom: '24px' }}>Admin Panel</h1>
 
-        {activeTab === 'Çıkış Yap' && (
-            <div style={{ textAlign: 'center', marginTop: '40px' }}>
-                <h2 style={{marginBottom: '16px' }}>Çıkış yapmak istediğine emin misin?</h2>
-                <button onClick={handleLogout} style={{ ...buttonStyle, backgroundColor: '#EF4444' }}>Evet, çıkış yap</button>
-            </div>
-            )}
+        {activeTab === 'logout' && (
+            <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '16px', color: '#6D28D9' }} onClick={()=>handleLogout()}> Çıkış Yap</h2>
+        )}
 
         {/* Users Tab */}
         {activeTab === 'users' && (

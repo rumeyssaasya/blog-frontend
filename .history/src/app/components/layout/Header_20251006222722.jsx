@@ -15,7 +15,8 @@ export function Header() {
 
   useEffect(() => {
     const adminToken = localStorage.getItem('adminToken');
-    setIsAdmin(true);
+    if(adminToken)
+      setIsAdmin(true);
   }, []);
 
   const links = [

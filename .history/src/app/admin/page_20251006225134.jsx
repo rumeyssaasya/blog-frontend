@@ -134,7 +134,7 @@ export default function AdminPanel() {
   return (
     <ProtectedAdmin>
       <div style={tabContainerStyle}>
-        {['users', 'posts', 'comments','Çıkış Yap'].map(tab => (
+        {['users', 'posts', 'comments','logout'].map(tab => (
           <button key={tab} onClick={() => { setActiveTab(tab); setSelectedPostId(null); setSelectedCommentId(null); }} style={tabButtonStyle(activeTab === tab)}>{tab.toUpperCase()}</button>
         ))}
       </div>

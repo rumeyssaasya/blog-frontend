@@ -7,7 +7,7 @@ import {
   createPostByAdmin, updatePostByAdmin, updateUserByAdmin
 } from '../redux/slices/adminSlice';
 import ProtectedAdmin from '../components/ProtectedAdmin';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 export default function AdminPanel() {
   const dispatch = useDispatch();
@@ -15,7 +15,9 @@ export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState('users');
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [selectedCommentId, setSelectedCommentId] = useState(null);
-  const router =useRouter();
+  const router = useRouter()
+
+  const isLogin = localStorage.getItem(token,"adminToken")
 
   const selectedPost = useMemo(() => {
     const found = posts.find(p => p._id === selectedPostId);
@@ -23,10 +25,17 @@ export default function AdminPanel() {
   }, [selectedPostId, posts]);
 
   const postComments = useMemo(() => {
+    console.log('📝 POST COMMENTS DEBUG:');
+    console.log('All Comments:', comments);
+    console.log('Selected Post ID:', selectedPostId);
+    
+    // Post ID'leri string olarak karşılaştır
     const filtered = comments.filter(c => {
       const commentPostId = typeof c.post === 'object' ? c.post?._id : c.post;
       return commentPostId === selectedPostId;
     });
+    
+    console.log('Filtered Comments:', filtered);
     return filtered;
   }, [comments, selectedPostId]);
 
@@ -47,16 +56,13 @@ export default function AdminPanel() {
       dispatch(fetchAllComments());
     }
   }, [dispatch, token]);
+
+  // Scroll to comment detail when selectedComment changes
   useEffect(() => {
     if (selectedCommentId && commentDetailRef.current) {
       commentDetailRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [selectedCommentId]);
-
-  useEffect(() => {
-    const token = localStorage.getItem('adminToken')
-    if (!token) router.replace('/admin/login')
-    }, [router])
 
   // Scroll to post detail when selectedPost changes
   useEffect(() => {
@@ -65,11 +71,7 @@ export default function AdminPanel() {
     }
   }, [selectedPostId]);
 
-  const handleLogout=()=>{
-    localStorage.removeItem('adminToken')
-    localStorage.removeItem('adminEmail')
-    router.replace('/admin/login');
-  }
+  // Handle user update with bio
   const handleUpdateUser = () => {
     if (editUser.id) {
       dispatch(updateUserByAdmin({
@@ -84,6 +86,7 @@ export default function AdminPanel() {
     }
   };
 
+  // Handle post update
   const handleUpdatePost = () => {
     if (editPost.id) {
       const postData = {
@@ -92,7 +95,8 @@ export default function AdminPanel() {
         tags: editPost.tags.split(',').map(tag => tag.trim()),
         author: editPost.author
       };
-   
+      
+      // Eğer yeni bir resim seçilmişse, onu da ekle
       if (editPost.image) {
         postData.image = editPost.image;
       }
@@ -134,20 +138,13 @@ export default function AdminPanel() {
   return (
     <ProtectedAdmin>
       <div style={tabContainerStyle}>
-        {['users', 'posts', 'comments','Çıkış Yap'].map(tab => (
+        {['users', 'posts', 'comments'].map(tab => (
           <button key={tab} onClick={() => { setActiveTab(tab); setSelectedPostId(null); setSelectedCommentId(null); }} style={tabButtonStyle(activeTab === tab)}>{tab.toUpperCase()}</button>
         ))}
       </div>
 
       <div style={containerStyle}>
         <h1 style={{ textAlign: 'center', fontSize: '2rem', fontWeight: '700', color: '#5B21B6', marginBottom: '24px' }}>Admin Panel</h1>
-
-        {activeTab === 'Çıkış Yap' && (
-            <div style={{ textAlign: 'center', marginTop: '40px' }}>
-                <h2 style={{marginBottom: '16px' }}>Çıkış yapmak istediğine emin misin?</h2>
-                <button onClick={handleLogout} style={{ ...buttonStyle, backgroundColor: '#EF4444' }}>Evet, çıkış yap</button>
-            </div>
-            )}
 
         {/* Users Tab */}
         {activeTab === 'users' && (

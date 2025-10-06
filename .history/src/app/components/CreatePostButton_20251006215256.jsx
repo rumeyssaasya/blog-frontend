@@ -1,28 +1,26 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { FaPlus } from "react-icons/fa"
 import CreatePost from "./CreatePost"
 import { motion } from "framer-motion"
+import { useEffect } from "react"
 
 export default function CreatePostButton() {
   const [open, setOpen] = useState(false)
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  useEffect(() => {
-    // Normal kullanıcı token'ı kontrolü
-    const userToken = localStorage.getItem("token")
-    setIsUserLoggedIn(!!userToken)
-  }, [])
-
-  // Kullanıcı login değilse buton gösterme
-  if (!isUserLoggedIn) return null
+    useEffect(() => {
+      const adminToken = localStorage.getItem('adminToken');
+      setIsAdmin(!!adminToken);
+    }, []);
 
   return (
     <>
+     {!isAdmin && ( 
       <motion.div
-        initial={{ scale: 1 }}
-        whileHover={{ scale: 1.08 }}
+        initial={{ scale: 1, rotate: 0 }}
+        whileHover={{ scale: 1.08, rotate: 0 }}
         transition={{ type: "spring", stiffness: 120, damping: 18 }}
         style={{
           position: "fixed",
@@ -43,20 +41,22 @@ export default function CreatePostButton() {
             cursor: "pointer",
             boxShadow: "6px 6px 12px rgba(0,0,0,0.3)",
           }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.boxShadow =
-              "8px 12px 18px rgba(0,0,0,0.5)")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.boxShadow =
-              "6px 6px 12px rgba(0,0,0,0.3)")
-          }
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow =
+              "8px 12px 18px rgba(0,0,0,0.5)" 
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow =
+              "6px 6px 12px rgba(0,0,0,0.3)" 
+          }}
         >
           <FaPlus size={30} color="white" />
         </button>
       </motion.div>
 
-      {open && <CreatePost onClose={() => setOpen(false)} />}
+      {open && <CreatePost onClose={() => setOpen(false)} />
+    }
+      )}
     </>
   )
 }

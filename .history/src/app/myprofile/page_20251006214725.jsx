@@ -10,16 +10,14 @@ import { logout, hydrateUser } from "../redux/slices/authSlice";
 import { deleteUser, getUserProfile, updateUser } from "../redux/slices/usersSlices"; 
 import UpdateProfileForm from "../components/UpdateProfileForm";
 import { FaRegUser } from "react-icons/fa";
-import { useRouter } from 'next/navigation';
 
 export default function MyProfile() {
   const { theme } = useTheme();
   const dispatch = useDispatch();
-  const router = useRouter()
 
   const token = useSelector(state => state.auth.token);
-  const authUser = useSelector(state => state.auth.user);
-  const userProfile = useSelector(state => state.users.profile); 
+  const authUser = useSelector(state => state.auth.user); // sadece _id, email, username
+  const userProfile = useSelector(state => state.users.profile); // güncel profil
   const posts = useSelector(state => state.posts.items);
   const postsStatus = useSelector(state => state.posts.status);
 
@@ -28,13 +26,14 @@ export default function MyProfile() {
 
   const savedToken = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-
+  // İlk açılışta localStorage'dan auth bilgisini hydrate et
   useEffect(() => {
     if (!authUser || !token) {
       dispatch(hydrateUser());
     }
   }, [dispatch]);
 
+  // Component mount olduğunda profili çek
   useEffect(() => {
     if (authUser?._id) {
       const effectiveToken = savedToken || token;
@@ -42,6 +41,7 @@ export default function MyProfile() {
     }
   }, [dispatch, authUser?._id, token, savedToken]);
 
+  // Kullanıcının postlarını çek
   useEffect(() => {
     if (authUser?._id && (savedToken || token)) {
       const effectiveToken = savedToken || token;
@@ -53,16 +53,16 @@ export default function MyProfile() {
 
   const handleLogout = async () => {
     try {
-
+      // Redux state temizle
       dispatch(logout());
 
-
+      // LocalStorage temizle
       if (typeof window !== "undefined") {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
       }
 
-
+      // Opsiyonel: kullanıcıyı login sayfasına yönlendir
       router.replace("/login");
     } catch (err) {
       console.error(err);
@@ -161,7 +161,7 @@ export default function MyProfile() {
           <p><strong>Bio:</strong> {userProfile.bio || "Henüz bir bio eklenmemiş."}</p>
         </div>
 
-
+        {/* Kullanıcının postları */}
         {postsStatus === 'loading' ? (
           <p>Yükleniyor...</p>
         ) : posts.length === 0 ? (

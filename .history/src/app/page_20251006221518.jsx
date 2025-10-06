@@ -17,7 +17,6 @@ export default function PostsPage() {
   const status = useSelector((state) => state.posts.status)
   const currentUser = useSelector((state) => state.auth.user)
   const theme= useTheme().theme;
-  
 
   useEffect(() => {
     if (status === 'idle') dispatch(fetchPosts())
@@ -43,13 +42,11 @@ export default function PostsPage() {
 
       {status === 'succeeded' && (
         <div className=" flex flex-col items-center justify-center gap-6" style={{margin: '20px'}}>
-          
           {posts.map((post) => (
-            
             <div className='' key={post._id}>
               <div className='flex items-center gap-2 mb-2' style={{marginBottom:'5px',}}>
                 <MdOutlinePerson size={30} style={{color: theme ==='dark' ? '#e0e7ff' : '#6b21a8',}}/>
-                <p className="text-l mt-4">{(posts?.author?.username|| "Kullanıcı Silinmiş")}</p>
+                <p className="text-l mt-4">{post.author}</p>
               </div>
               
                 {post?.image && (

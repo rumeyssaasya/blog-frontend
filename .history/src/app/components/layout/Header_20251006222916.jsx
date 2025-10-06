@@ -15,7 +15,8 @@ export function Header() {
 
   useEffect(() => {
     const adminToken = localStorage.getItem('adminToken');
-    setIsAdmin(true);
+    if(adminToken)
+      setIsAdmin(true);
   }, []);
 
   const links = [
@@ -43,12 +44,14 @@ export function Header() {
             Tarvina Blog
           </div>
           {isAdmin && ( 
-            <Link href="/myProfile">
-              <CgProfile 
-                size={40} 
-                className="cursor-pointer text-white hover:opacity-80 transition-opacity" 
-              />
-            </Link>
+            <ProtectedPage>
+              <Link href="/myProfile">
+                <CgProfile 
+                  size={40} 
+                  className="cursor-pointer text-white hover:opacity-80 transition-opacity" 
+                />
+              </Link>
+            </ProtectedPage>
           )}
         </div>
       </div>

@@ -7,16 +7,13 @@ import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import Search from '../Search';
 import ProtectedPage from '../ProtectedPage';
+import { useSelector } from 'react-redux'; // Redux'tan user bilgisi alacağız
 
 export function Header() {
   const pathname = usePathname();
   const { theme } = useTheme();
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    const adminToken = localStorage.getItem('adminToken');
-    setIsAdmin(true);
-  }, []);
+  const { user } = useSelector(state => state.auth); // giriş yapan kullanıcı bilgisi
+  const isAdmin = user?.role === 'admin'; // admin kontrolü
 
   const links = [
     { href: "/posts", label: "Postlar" },
@@ -42,7 +39,8 @@ export function Header() {
           <div className="font-bold text-5xl text-white">
             Tarvina Blog
           </div>
-          {isAdmin && ( 
+          {/* Eğer admin değilse profile göster */}
+          {!isAdmin && (
             <Link href="/myProfile">
               <CgProfile 
                 size={40} 

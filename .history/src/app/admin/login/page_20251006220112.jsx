@@ -14,6 +14,7 @@ export default function AdminLoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  // Eğer localStorage'da token varsa admin paneline yönlendir
   useEffect(() => {
     const storedToken = localStorage.getItem('adminToken')
     if (storedToken) router.replace('/admin')
@@ -23,8 +24,8 @@ export default function AdminLoginPage() {
     e.preventDefault()
     try {
       const result = await dispatch(adminLogin({ email, password })).unwrap()
-      localStorage.setItem('adminToken', result)
-      console.log(result)
+      // LocalStorage kaydı
+      localStorage.setItem('adminToken', result.token)
       localStorage.setItem('adminEmail', email)
       router.replace('/admin')
     } catch (e) {

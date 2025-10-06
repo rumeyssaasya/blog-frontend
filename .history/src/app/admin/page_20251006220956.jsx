@@ -7,7 +7,6 @@ import {
   createPostByAdmin, updatePostByAdmin, updateUserByAdmin
 } from '../redux/slices/adminSlice';
 import ProtectedAdmin from '../components/ProtectedAdmin';
-import { useRouter } from 'next/navigation';
 
 export default function AdminPanel() {
   const dispatch = useDispatch();
@@ -15,7 +14,6 @@ export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState('users');
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [selectedCommentId, setSelectedCommentId] = useState(null);
-  const router =useRouter();
 
   const selectedPost = useMemo(() => {
     const found = posts.find(p => p._id === selectedPostId);
@@ -53,11 +51,6 @@ export default function AdminPanel() {
     }
   }, [selectedCommentId]);
 
-  useEffect(() => {
-    const token = localStorage.getItem('adminToken')
-    if (!token) router.replace('/admin/login')
-    }, [router])
-
   // Scroll to post detail when selectedPost changes
   useEffect(() => {
     if (selectedPostId && postDetailRef.current) {
@@ -65,11 +58,7 @@ export default function AdminPanel() {
     }
   }, [selectedPostId]);
 
-  const handleLogout=()=>{
-    localStorage.removeItem('adminToken')
-    localStorage.removeItem('adminEmail')
-    router.replace('/admin/login');
-  }
+  // Handle user update with bio
   const handleUpdateUser = () => {
     if (editUser.id) {
       dispatch(updateUserByAdmin({
@@ -134,20 +123,13 @@ export default function AdminPanel() {
   return (
     <ProtectedAdmin>
       <div style={tabContainerStyle}>
-        {['users', 'posts', 'comments','Çıkış Yap'].map(tab => (
+        {['users', 'posts', 'comments'].map(tab => (
           <button key={tab} onClick={() => { setActiveTab(tab); setSelectedPostId(null); setSelectedCommentId(null); }} style={tabButtonStyle(activeTab === tab)}>{tab.toUpperCase()}</button>
         ))}
       </div>
 
       <div style={containerStyle}>
         <h1 style={{ textAlign: 'center', fontSize: '2rem', fontWeight: '700', color: '#5B21B6', marginBottom: '24px' }}>Admin Panel</h1>
-
-        {activeTab === 'Çıkış Yap' && (
-            <div style={{ textAlign: 'center', marginTop: '40px' }}>
-                <h2 style={{marginBottom: '16px' }}>Çıkış yapmak istediğine emin misin?</h2>
-                <button onClick={handleLogout} style={{ ...buttonStyle, backgroundColor: '#EF4444' }}>Evet, çıkış yap</button>
-            </div>
-            )}
 
         {/* Users Tab */}
         {activeTab === 'users' && (

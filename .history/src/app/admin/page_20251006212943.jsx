@@ -7,7 +7,6 @@ import {
   createPostByAdmin, updatePostByAdmin, updateUserByAdmin
 } from '../redux/slices/adminSlice';
 import ProtectedAdmin from '../components/ProtectedAdmin';
-import { useRouter } from 'next/navigation';
 
 export default function AdminPanel() {
   const dispatch = useDispatch();
@@ -15,18 +14,27 @@ export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState('users');
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [selectedCommentId, setSelectedCommentId] = useState(null);
-  const router =useRouter();
 
   const selectedPost = useMemo(() => {
     const found = posts.find(p => p._id === selectedPostId);
+    console.log('🔍 SELECTED POST DEBUG:');
+    console.log('Selected Post ID:', selectedPostId);
+    console.log('Found Post:', found);
     return found;
   }, [selectedPostId, posts]);
 
   const postComments = useMemo(() => {
+    console.log('📝 POST COMMENTS DEBUG:');
+    console.log('All Comments:', comments);
+    console.log('Selected Post ID:', selectedPostId);
+    
+    // Post ID'leri string olarak karşılaştır
     const filtered = comments.filter(c => {
       const commentPostId = typeof c.post === 'object' ? c.post?._id : c.post;
       return commentPostId === selectedPostId;
     });
+    
+    console.log('Filtered Comments:', filtered);
     return filtered;
   }, [comments, selectedPostId]);
 
@@ -47,16 +55,13 @@ export default function AdminPanel() {
       dispatch(fetchAllComments());
     }
   }, [dispatch, token]);
+
+  // Scroll to comment detail when selectedComment changes
   useEffect(() => {
     if (selectedCommentId && commentDetailRef.current) {
       commentDetailRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [selectedCommentId]);
-
-  useEffect(() => {
-    const token = localStorage.getItem('adminToken')
-    if (!token) router.replace('/admin/login')
-    }, [router])
 
   // Scroll to post detail when selectedPost changes
   useEffect(() => {
@@ -65,11 +70,7 @@ export default function AdminPanel() {
     }
   }, [selectedPostId]);
 
-  const handleLogout=()=>{
-    localStorage.removeItem('adminToken')
-    localStorage.removeItem('adminEmail')
-    router.replace('/admin/login');
-  }
+  // Handle user update with bio
   const handleUpdateUser = () => {
     if (editUser.id) {
       dispatch(updateUserByAdmin({
@@ -84,6 +85,7 @@ export default function AdminPanel() {
     }
   };
 
+  // Handle post update
   const handleUpdatePost = () => {
     if (editPost.id) {
       const postData = {
@@ -92,7 +94,8 @@ export default function AdminPanel() {
         tags: editPost.tags.split(',').map(tag => tag.trim()),
         author: editPost.author
       };
-   
+      
+      // Eğer yeni bir resim seçilmişse, onu da ekle
       if (editPost.image) {
         postData.image = editPost.image;
       }
@@ -134,20 +137,13 @@ export default function AdminPanel() {
   return (
     <ProtectedAdmin>
       <div style={tabContainerStyle}>
-        {['users', 'posts', 'comments','Çıkış Yap'].map(tab => (
+        {['users', 'posts', 'comments'].map(tab => (
           <button key={tab} onClick={() => { setActiveTab(tab); setSelectedPostId(null); setSelectedCommentId(null); }} style={tabButtonStyle(activeTab === tab)}>{tab.toUpperCase()}</button>
         ))}
       </div>
 
       <div style={containerStyle}>
         <h1 style={{ textAlign: 'center', fontSize: '2rem', fontWeight: '700', color: '#5B21B6', marginBottom: '24px' }}>Admin Panel</h1>
-
-        {activeTab === 'Çıkış Yap' && (
-            <div style={{ textAlign: 'center', marginTop: '40px' }}>
-                <h2 style={{marginBottom: '16px' }}>Çıkış yapmak istediğine emin misin?</h2>
-                <button onClick={handleLogout} style={{ ...buttonStyle, backgroundColor: '#EF4444' }}>Evet, çıkış yap</button>
-            </div>
-            )}
 
         {/* Users Tab */}
         {activeTab === 'users' && (
@@ -259,18 +255,11 @@ export default function AdminPanel() {
                 {selectedComment && (
                   <div ref={commentDetailRef} style={{ marginTop: '16px', padding: '12px', border: '1px solid #C4B5FD', borderRadius: '12px', backgroundColor: '#EDE9FE' }}>
                     <h5 style={{ fontWeight: '600', marginBottom: '12px' }}>Yorum Detayı</h5>
-                    <div
-                    style={{
-                        width: '100%',
-                        padding: '8px',
-                        marginBottom: '12px',
-                        borderRadius: '8px',
-                        border: '1px solid #C4B5FD',
-                        minHeight: '80px',
-                    }}
-                    >
-                    {editComment.id === selectedComment._id ? editComment.content : selectedComment.content}
-                    </div>
+                    <textarea
+                      value={editComment.id === selectedComment._id ? editComment.content : selectedComment.content}
+                      onChange={e => setEditComment({ id: selectedComment._id, content: e.target.value })}
+                      style={{ width: '100%', padding: '8px', marginBottom: '12px', borderRadius: '8px', border: '1px solid #C4B5FD', minHeight: '80px' }}
+                    />
                     <div style={{ display: 'flex', gap: '12px' }}>
                       <button onClick={() => { dispatch(deleteCommentByAdmin(selectedComment._id)); setSelectedCommentId(null); }} style={{ ...buttonStyle, backgroundColor: '#EF4444' }}>Sil</button>
                       <button onClick={() => setSelectedCommentId(null)} style={{ ...buttonStyle, backgroundColor: '#9CA3AF' }}>İptal</button>
@@ -291,6 +280,7 @@ export default function AdminPanel() {
               return (
                 <div key={comment._id} style={cardStyle}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <span><strong>Post:</strong> {parentPost?.title || "Post silinmiş"}</span>
                     <span><strong>Kullanıcı:</strong> {comment.author?.username || "Kullanıcı Silinmiş"}</span>
                     <span><strong>Yorum:</strong> {comment.content}</span>
                   </div>
