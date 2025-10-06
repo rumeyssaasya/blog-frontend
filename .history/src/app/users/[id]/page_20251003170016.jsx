@@ -1,0 +1,17 @@
+"use client"
+import UserProfile from "../../components/UserProfile";
+import MyPosts from "../../components/MyPosts";
+import React from "react";
+import { useParams } from "next/navigation";
+
+export default function UserPage({ params }) {
+    const { id } = useParams();
+    const userId = id;
+
+  return (
+    <div>
+      <UserProfile userId={id} />
+      <MyPosts userId={id} />
+    </div>
+  );
+}

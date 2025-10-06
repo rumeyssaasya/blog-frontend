@@ -1,0 +1,60 @@
+'use client'
+
+import { useState } from 'react'
+import { usePathname } from 'next/navigation'
+import ThemeComp from './ThemeComp'
+import { CgProfile } from "react-icons/cg";
+import Link from 'next/link';
+import { useTheme } from 'next-themes';
+
+export function Header() {
+  const pathname = usePathname(); // Şu anki sayfanın yolu
+  const [query, setQuery] = useState("");
+  const theme= useTheme().theme;
+
+  const links = [
+    { href: "/posts", label: "Postlar" },
+    { href: "/users", label: "Kişiler" },
+  ];
+
+  return (
+    <header>
+      <div className="bg-indigo-300 dark:bg-violet-700 w-full" style={{padding:'4rem', backgroundColor: theme === 'dark' ? '#7B1FA2' : '#7986CB', transition:'background-color 0.3s'}}>
+        <div className="flex items-center justify-between h-20">
+          <ThemeComp />
+          <div className="font-bold text-5xl text-violet-800 dark:text-indigo-100">
+            Tarvina Blog
+          </div>
+          <CgProfile size={40} className="text-violet-800 dark:text-indigo-100"/>
+        </div>
+      </div>
+
+      <div className='flex justify-center m-4 '>
+        <nav className="flex w-fit gap-6 bg-indigo-100 dark:bg-violet-800 p-3 text-lg font-medium text-violet-900 dark:text-white">
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={`px-3 py-1 rounded transition-colors ${
+              pathname === link.href
+                ? "bg-indigo-200 dark:bg-violet-500 text-violet-900 dark:text-white"
+                : "hover:text-blue-600"
+            }`}
+          >
+            {link.label}
+          </Link>
+        ))}
+        <input
+          type="text"
+          onChange={(e) => setQuery(e.target.value)}
+          value={query}
+          placeholder="Ara..."
+          className="ml-4 px-4 py-2 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none bg-transparent border rounded"
+        />
+      </nav>
+      </div>
+      
+    </header>
+  )
+}
+export default Header;

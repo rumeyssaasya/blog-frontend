@@ -1,0 +1,100 @@
+'use client';
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "next/navigation";
+import { getPostById } from "../../redux/slices/postsSlice";
+
+export default function PostDetailPage() {
+  const dispatch = useDispatch();
+  const params = useParams();
+  const postId = params.id;
+  const post = useSelector(state => state.posts.singlePost);
+
+  useEffect(() => {
+    if (postId) {
+      dispatch(getPostById(postId));
+    }
+  }, [dispatch, postId]);
+
+  if (!post) return <p>Post yükleniyor...</p>;
+
+  return (
+    <div
+      style={{
+        margin: "2% 10%",
+        height: "500px",
+        borderRadius: "12px",
+        backgroundColor:"#",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        position: "relative",
+        color: "#fff",
+        overflow: "hidden",
+      }}
+    >
+      {/* Overlay */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "rgba(0,0,0,0.5)",
+        }}
+      />
+
+      {/* Başlık */}
+      <h1
+        style={{
+          position: "absolute",
+          top: "5%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          fontSize: "40px",
+          fontWeight: "bold",
+          zIndex: 1,
+          textAlign: "center",
+        }}
+      >
+        {post.title}
+      </h1>
+
+      {/* İçerik */}
+      <p
+        style={{
+          position: "absolute",
+          top: "20%",
+          left: "5%",
+          fontSize: "30px",
+          lineHeight: "1.6",
+          zIndex: 1,
+          maxWidth: "90%",
+        }}
+      >
+        {post.content}
+      </p>
+        {post?.image ? (
+        <img
+            src={`http://localhost:5000/${post.image.replace(/\\/g, "/")}`}
+            alt={post.title}
+            style={{ width: "100%", borderRadius: "12px" }}
+        />
+        ) : null}
+      
+
+      {/* Yazar */}
+      {post.author?.username && (
+        <p
+          style={{
+            position: "absolute",
+            bottom: "10px",
+            right: "5%",
+            fontSize: "18px",
+            zIndex: 1,
+            fontStyle: "italic",
+          }}
+        >
+          {`Yazar: ${post.author.username}`}
+        </p>
+      )}
+    </div>
+  );
+}
