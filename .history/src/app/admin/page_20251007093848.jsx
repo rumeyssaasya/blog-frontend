@@ -147,6 +147,7 @@ export default function AdminPanel() {
             </div>
             )}
 
+        {/* Users Tab */}
         {activeTab === 'users' && (
           <section style={sectionStyle}>
             <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '16px', color: '#6D28D9' }}>Kullanıcılar</h2>
@@ -251,6 +252,8 @@ export default function AdminPanel() {
                     </div>
                   ))
                 )}
+
+                {/* Selected Comment Detail */}
                 {selectedComment && (
                   <div ref={commentDetailRef} style={{ marginTop: '16px', padding: '12px', border: '1px solid #C4B5FD', borderRadius: '12px', backgroundColor: '#EDE9FE' }}>
                     <h5 style={{ fontWeight: '600', marginBottom: '12px' }}>Yorum Detayı</h5>

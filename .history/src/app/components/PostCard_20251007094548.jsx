@@ -24,7 +24,7 @@ function PostCard({ post, theme, currentUserId }) {
   const route = useRouter();
 
 
-  
+  // Resolve current user id from Redux if not provided via props
   const authUserId = useSelector(state => state?.auth?.user?._id);
   const effectiveUserId = currentUserId ?? authUserId;
 
@@ -33,9 +33,13 @@ function PostCard({ post, theme, currentUserId }) {
 
 
 
-  
- 
-  
+  // Update like state when post changes
+/*   useEffect(() => {
+    setLikesCount(Number(post.likesCount) || 0);
+    setLiked(Array.isArray(post.likedByUsers) && post.likedByUsers.includes(currentUserId));
+  }, [post.likesCount, post.likedByUsers, currentUserId]); */
+
+  // Preload image
   useEffect(() => {
     if (hasImage) {
       const tempImg = new window.Image();
@@ -82,16 +86,16 @@ function PostCard({ post, theme, currentUserId }) {
   const handleLike = async (e) => {
   e.stopPropagation();
 
-  
+  // Optimistic UI update için local state
   const previousLiked = liked;
   let updatedLikesCount = previousLiked ? likesCount - 1 : likesCount + 1;
 
   try {
     const res = await dispatch(likePost(post._id)).unwrap();
-    
+    // post update edilecek: parent component post objesini güncellerse UI kendiliğinden doğru olur
   } catch (error) {
     console.error("Like işlemi başarısız:", error);
-    
+    // Hata durumunda user bilgilendirilebilir
     alert("Like işlemi başarısız oldu");
   }
 };
